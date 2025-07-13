@@ -35,7 +35,7 @@ const Project = require('../models/projectModel');
 // Send Projects Controller
 const getProjectsController = async (req, res) => {
   try {
-    const projects = await Project.find({}).sort({ createdAt: -1 }); // Get all projects
+    const projects = await Project.find({}).sort({ createdAt: -1 });
     return res.status(200).send({
       success: true,
       message: "Projects fetched successfully.",
@@ -51,32 +51,41 @@ const getProjectsController = async (req, res) => {
   }
 };
 
-
-//transport for sending emails
-const transporter = nodemailer.createTransport(
-  sendGridTransport({
-    auth: {
-      api_key: process.env.API_SENDGRID,
-    },
-  })
-);
-
-const sendEmailController = (req, res) => {
+// --- This is the function we are fixing ---
+const sendEmailController = async (req, res) => { // Step 1: Make the function async
   try {
     const { name, email, msg } = req.body;
 
-    //validation
     if (!name || !email || !msg) {
-      return res.status(500).send({
+      return res.status(400).send({ // Use 400 for bad request, not 500
         success: false,
         message: "Please Provide All Fields",
       });
     }
-    //email matter
-    transporter.sendMail({
+
+    // Check if the SendGrid API key is loaded
+    if (!process.env.API_SENDGRID) {
+      console.error("ERROR: SendGrid API key is not configured.");
+      return res.status(500).send({
+        success: false,
+        message: "Server configuration error. Email could not be sent."
+      });
+    }
+
+    // Re-create the transporter inside the function to ensure the API key is fresh
+    const transporter = nodemailer.createTransport(
+      sendGridTransport({
+        auth: {
+          api_key: process.env.API_SENDGRID,
+        },
+      })
+    );
+
+    // Step 2: Use "await" to wait for the email to be sent
+    await transporter.sendMail({
       to: "mark1william11@gmail.com",
-      from: "mark1william11@gmail.com",
-      subject: "WORK",
+      from: "mark1william11@gmail.com", // Note: Some email providers require the 'from' address to be a verified domain.
+      subject: `New Portfolio Contact from ${name}`,
       html: `
         <h5>Detail Information</h5>
         <ul>
@@ -87,16 +96,19 @@ const sendEmailController = (req, res) => {
       `,
     });
 
+    // Step 3: Only send success AFTER the email is sent
     return res.status(200).send({
       success: true,
-      message: "Your Message Send Successfully",
+      message: "Your Message Sent Successfully",
     });
+
   } catch (error) {
-    console.log(error);
+    // This will now catch any errors from transporter.sendMail()
+    console.error("Send Email API Error:", error);
     return res.status(500).send({
       success: false,
       message: "Send Email API Error",
-      error,
+      error: error.message || 'An unknown error occurred',
     });
   }
 };
