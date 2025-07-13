@@ -1,7 +1,3 @@
-const nodemailer = require("nodemailer");
-const sendGridTransport = require("nodemailer-sendgrid-transport");
-const Project = require('../models/projectModel');
-
 // This is our temporary "database" of projects.
 // In the future, we'll fetch this from MongoDB.
 // const projectsData = [
@@ -32,7 +28,9 @@ const Project = require('../models/projectModel');
 // ];
 
 
-// Send Projects Controller
+const Project = require('../models/projectModel');
+
+// The only controller we need now is the one that gets our projects.
 const getProjectsController = async (req, res) => {
   try {
     const projects = await Project.find({}).sort({ createdAt: -1 });
@@ -51,56 +49,4 @@ const getProjectsController = async (req, res) => {
   }
 };
 
-const sendEmailController = (req, res) => {
-  const { name, email, msg } = req.body;
-
-  // Validation
-  if (!name || !email || !msg) {
-    return res.status(400).json({ success: false, message: "Please provide all fields." });
-  }
-
-  // API Key Check
-  if (!process.env.API_SENDGRID) {
-    console.error("CRITICAL: API_SENDGRID environment variable not found.");
-    return res.status(500).json({ success: false, message: "Server is not configured for sending emails." });
-  }
-
-  const transporter = nodemailer.createTransport(
-    sendGridTransport({
-      auth: {
-        api_key: process.env.API_SENDGRID,
-      },
-    })
-  );
-
-  const mailOptions = {
-    to: "mark1william11@gmail.com",
-    from: "mark1william11@gmail.com", // This MUST be your verified sender
-    subject: `New Portfolio Contact from ${name}`,
-    html: `
-      <p>You have a new contact request</p>
-      <h3>Contact Details</h3>
-      <ul>
-        <li>Name: ${name}</li>
-        <li>Email: ${email}</li>
-        <li>Message: ${msg}</li>
-      </ul>
-    `,
-  };
-
-  // Use a callback approach which is sometimes more stable in serverless environments
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("SendGrid Error:", error.toString());
-      return res.status(500).json({
-        success: false,
-        message: "Failed to send email.",
-        error: error.toString(), // Send a clear error back
-      });
-    }
-    console.log("Message sent: %s", info.messageId);
-    return res.status(200).json({ success: true, message: "Your message sent successfully!" });
-  });
-};
-
-module.exports = { sendEmailController, getProjectsController };
+module.exports = { getProjectsController };

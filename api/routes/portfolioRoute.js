@@ -1,8 +1,9 @@
 const express = require("express");
-// Corrected path for the controller file
-const { sendEmailController, getProjectsController } = require("../controllers/portfolioContoller");
+const { getProjectsController } = require("../controllers/portfolioContoller");
 
 const router = express.Router();
+
+// The only API route we need now is for fetching projects.
 router.get("/get-projects", getProjectsController);
-router.post("/sendEmail", sendEmailController);
+
 module.exports = router;
