@@ -1,17 +1,26 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { ThemeProvider } from "./context/ThemeContext";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+// Import Mantine's core styles
+// eslint-disable-next-line import/no-unresolved
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
+
+import { theme } from './theme';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import { ThemeProvider } from './context/ThemeContext';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <ThemeProvider>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </ThemeProvider>
+  <React.StrictMode>
+    <MantineProvider defaultColorScheme="dark" theme={theme}>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </MantineProvider>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

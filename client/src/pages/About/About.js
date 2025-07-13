@@ -1,33 +1,70 @@
-import React from "react";
-import "./About.css";
-import Fade from "react-reveal/Fade";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Container, Title, Text, Grid, Paper, Avatar } from '@mantine/core';
+import './About.css';
+
 const About = () => {
   return (
-    <>
-      <Fade right>
-        <div className="about" id="about">
-          <div className="row">
-            <div className="col-md-6 col-xl-6 col-lg-6 col-xs-12 about-img">
-              <img
-                src="https://img.freepik.com/premium-photo/isolated-businessman-character-avatar-professional-branding_1029469-184451.jpg"
-                alt="profile_pic"
-              />
-            </div>
-            <div className="col-md-6 col-xl-6 col-lg-6 col-xs-12 about-content">
-              <h1>About me</h1>
-              <p>
-                Hi, I'm Mark William, a passionate mobile app developer and
-                computer science student at Egypt-Japan University of Science
-                and Technology. With experience in HTML, CSS, JavaScript, React,
-                XML, Dart, and Flutter, I enjoy creating intuitive and dynamic
-                user experiences. I'm eager to apply my skills in a professional
-                setting and am always open to new opportunities and challenges.
-              </p>
-            </div>
-          </div>
-        </div>
-      </Fade>
-    </>
+    <div className="about" id="about">
+      <Container size="lg" py="xl">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
+          <Title order={2} ta="center" mb="lg">
+            About Me
+          </Title>
+          <div className="section-divider"></div>
+        </motion.div>
+
+        <Paper shadow="md" p="xl" radius="md" withBorder>
+          <Grid align="center" gutter="xl">
+            <Grid.Col span={{ base: 12, md: 4 }}>
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Avatar
+                  src="https://media.licdn.com/dms/image/D4D03AQF_R1hROfXmYg/profile-displayphoto-shrink_400_400/0/1698337774207?e=1726099200&v=beta&t=x3zD-jG80aH03T2wS1Zf8bL2w2wY9G3o2a9C1XJ5H7k"
+                  size={200}
+                  radius="50%"
+                  alt="Mark William"
+                  mx="auto"
+                  display="block"
+                  style={{ border: '4px solid var(--mantine-color-blue-5)' }}
+                />
+              </motion.div>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 8 }}>
+              <motion.div
+                initial={{ x: 50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <Text fz="lg" lh="xl">
+                  Hello! I am a passionate Computer Science student at Egypt-Japan
+                  University of Science and Technology, specializing in Computer
+                  Science and Information Technology. My academic journey has
+                  equipped me with a strong foundation in programming, algorithms,
+                  and software development methodologies.
+                </Text>
+                <Text fz="lg" mt="md" lh="xl">
+                  I am deeply interested in **mobile development** and have hands-on
+                  experience building applications using frameworks like Flutter and
+                  React Native. I'm always driven by the challenge of creating
+                  intuitive, user-friendly interfaces that solve real-world problems.
+                </Text>
+              </motion.div>
+            </Grid.Col>
+          </Grid>
+        </Paper>
+      </Container>
+    </div>
   );
 };
 

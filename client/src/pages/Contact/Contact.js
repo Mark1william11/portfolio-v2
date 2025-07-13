@@ -1,123 +1,102 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import axios from "axios";
-import "./Contact.css";
-import Rotate from "react-reveal/Rotate";
-import LightSpeed from "react-reveal/LightSpeed";
-import { BsFacebook, BsGithub, BsLinkedin } from "react-icons/bs";
-import { SiGmail } from "react-icons/si";
+import React, { useState } from 'react';
+import axiosInstance from '../../api/axiosInstance';
+import { toast } from 'react-toastify';
+import { motion } from 'framer-motion';
+import { Container, Title, Text, Grid, Paper, TextInput, Textarea, Button, Group, ActionIcon, Stack, Loader } from '@mantine/core';
+import { BsGithub, BsLinkedin } from "react-icons/bs";
+import './Contact.css';
 
 const Contact = () => {
-  const [name, setname] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  //handle submit button
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (!name || !email || !msg) {
-        toast.error("PLease Provide all fields");
+        toast.error("Please provide all fields");
+        return;
       }
-      const res = await axios.post("/api/v1/portfolio/sendEmail", {
-        name,
-        email,
-        msg,
-      });
-      //validation success
-      if (res.data.success) {
-        toast.success(res.data.message);
-        setname("");
+      setLoading(true);
+      const { data } = await axiosInstance.post("/api/v1/portfolio/sendEmail", { name, email, msg });
+      setLoading(false);
+      if (data.success) {
+        toast.success(data.message);
+        setName("");
         setEmail("");
         setMsg("");
       } else {
-        toast.error(res.data.message);
+        toast.error(data.message);
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
+      toast.error("Something went wrong");
     }
   };
 
   return (
-    <>
-      <div className=" contact" id="contact">
-        <div className="card card0 border-0">
-          <div className="row">
-            <div className="col-md-6 col-lg-6 col-xl-6 col-sm-12">
-              <div className="card1">
-                <div className="row border-line">
-                  <LightSpeed>
-                    <img
-                      src="https://cdn.prod.website-files.com/5ef0df6b9272f7410180a013/5ef204bb10b93fdbe5e601bb_contact-2860030_1920-1024x683.jpg"
-                      alt="Contact"
-                      className="image"
-                    />
-                  </LightSpeed>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-6 col-md-6">
-              <Rotate>
-                <div className="card2 d-flex card border-0 px-4 py-5">
-                  <div className="row">
-                    <div className="row">
-                      <h6>
-                        Contact With
-                        <BsLinkedin color="blue" size={30} className="ms-2" />
-                        <BsGithub color="black" size={30} className="ms-2" />
-                        <BsFacebook color="blue" size={30} className="ms-2" />
-                        <SiGmail color="black" size={30} className="ms-2" />
-                      </h6>
-                    </div>
-
-                    <div className="row px-3 mb-4">
-                      <div className="line" />
-                      <small className="or text-center">OR</small>
-                      <div className="line" />
-                    </div>
-                    <div className="row px-3">
-                      <input
-                        type="text"
-                        name="name"
-                        placeholder="Enter your Name"
-                        className="mb-3"
-                        value={name}
-                        onChange={(e) => setname(e.target.value)}
-                      />
-                    </div>
-                    <div className="row px-3">
-                      <input
-                        type="email"
-                        name="email"
-                        placeholder="Enter Your Email Address"
-                        className="mb-3"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                    <div className="row px-3">
-                      <textarea
-                        type="text"
-                        name="msg"
-                        placeholder="Write your message"
-                        className="mb-3"
-                        value={msg}
-                        onChange={(e) => setMsg(e.target.value)}
-                      />
-                    </div>
-                    <div className="row px-3">
-                      <button className="button" onClick={handleSubmit}>
-                        SEND MESSAGE
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Rotate>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+    <div id="contact">
+      <Container size="lg" py="xl">
+        <Title order={2} ta="center" mb="lg">Contact Me</Title>
+        <div className="section-divider"></div>
+        <Grid gutter="xl">
+          <Grid.Col span={{ base: 12, md: 5 }}>
+            <Paper withBorder p="xl" radius="md" className="contact-info-paper" style={{ height: '100%' }}>
+              <motion.div
+                initial={{ x: -50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Stack align="center" gap="lg">
+                  <Title order={3}>Let's Connect!</Title>
+                  <img src="/images/contact-us.jpg" alt="contact" className="contact-image" />
+                  <Text ta="center">I'm always open to discussing new projects, creative ideas, or opportunities.</Text>
+                  <Group>
+                    <ActionIcon component="a" href="https://www.linkedin.com/in/mark-william-92694b219/" target="_blank" rel="noopener noreferrer" size="lg" variant="default" radius="xl"><BsLinkedin size={22} /></ActionIcon>
+                    <ActionIcon component="a" href="https://github.com/Mark1william11" target="_blank" rel="noopener noreferrer" size="lg" variant="default" radius="xl"><BsGithub size={22} /></ActionIcon>
+                  </Group>
+                </Stack>
+              </motion.div>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Paper withBorder shadow="md" p="xl" radius="md" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <motion.div
+                initial={{ x: 50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                viewport={{ once: true }}
+                style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+              >
+                <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <Stack style={{ flexGrow: 1 }}>
+                    <TextInput withAsterisk label="Your Name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} size="md"/>
+                    <TextInput withAsterisk label="Your Email" placeholder="your.email@provider.com" value={email} onChange={(e) => setEmail(e.target.value)} size="md"/>
+                    <Textarea withAsterisk label="Your Message" placeholder="I'd like to talk about..." minRows={4} value={msg} onChange={(e) => setMsg(e.target.value)} size="md"/>
+                  </Stack>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    variant="gradient"
+                    gradient={{ from: 'blue', to: 'cyan' }}
+                    disabled={loading}
+                    leftSection={loading ? <Loader color="white" size="xs" /> : null}
+                    fullWidth
+                    style={{ marginTop: "48px", alignSelf: "flex-end" }}
+                  >
+                    {loading ? 'Sending...' : 'Send Message'}
+                  </Button>
+                </form>
+              </motion.div>
+            </Paper>
+          </Grid.Col>
+        </Grid>
+      </Container>
+    </div>
   );
 };
 

@@ -1,0 +1,144 @@
+.app-container {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  background-color: #050816; /* Dark fallback */
+}
+
+/* === 3D Scene and Content Overlay === */
+.scene-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.content-overlay {
+  position: relative;
+  z-index: 1;
+}
+
+/* === Hero Section === */
+.hero-section {
+  min-height: 50vh;
+  padding: 4rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-content {
+  text-align: center;
+}
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px solid var(--mantine-color-blue-4);
+  margin-bottom: 1rem;
+  box-shadow: 0 0 25px rgba(72, 162, 255, 0.6);
+}
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  color: white;
+}
+.hero-subtitle {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: var(--mantine-color-yellow-5);
+}
+
+/* === Content Hub & Tabs === */
+.content-hub {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.content-hub .mantine-Tabs-root {
+  display: flex;
+  align-items: flex-start;
+}
+.tabs-list {
+  border: none !important;
+  position: sticky;
+  top: 2rem;
+}
+.tabs-panel-wrapper {
+  flex-grow: 1;
+  padding-left: 2rem;
+}
+
+/* Fix for Tab Icon and Text color. This is a very specific selector to override Mantine */
+.mantine-Tabs-tab {
+    color: var(--mantine-color-gray-5) !important; /* A nice, readable grey for unselected tabs */
+    transition: all 0.2s ease-in-out !important;
+}
+
+.mantine-Tabs-tab:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: white !important;
+}
+/* Make the icon and text white on hover as well */
+.mantine-Tabs-tab:hover .mantine-Tabs-tabSection {
+    color: white !important;
+}
+
+/* Style for the ACTIVE/SELECTED tab */
+.mantine-Tabs-tab[data-active='true'] {
+    background-color: var(--mantine-color-blue-filled) !important;
+    color: white !important;
+}
+/* Make the icon and text white for the active tab */
+.mantine-Tabs-tab[data-active='true'] .mantine-Tabs-tabSection {
+    color: white !important;
+}
+
+/* === Global Fix for All Content Panels === */
+/* This ensures any Paper or Card inside a panel has a dark background and readable text */
+.tabs-panel-wrapper .mantine-Paper-root,
+.tabs-panel-wrapper .mantine-Card-root {
+  --_card-bg: #151030; /* A slightly lighter, high-contrast dark purple */
+  color: var(--mantine-color-gray-2);
+}
+/* Ensure titles inside these cards are pure white */
+.tabs-panel-wrapper .mantine-Paper-root .mantine-Title-root,
+.tabs-panel-wrapper .mantine-Card-root .mantine-Title-root {
+    color: white;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .hero-section { height: auto; }
+  .content-hub .mantine-Tabs-root { flex-direction: column; }
+  .tabs-list {
+    position: relative;
+    top: 0;
+    display: flex;
+    flex-direction: row !important;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .tabs-panel-wrapper { padding-left: 0; }
+}
+
+/* This is a very specific selector to override Mantine's defaults */
+.mantine-Tabs-tab {
+  cursor: pointer !important;
+}
+
+/* Add this for all buttons and links to ensure pointer cursor */
+button,
+a,
+.mantine-Button-root {
+  cursor: pointer !important;
+}
+
+/* Add a subtle lift/glow on hover for ALL interactive elements for consistency */
+.hero-button:hover,
+.mantine-Tabs-tab:hover,
+.mantine-Card-root:hover { /* Also apply to project cards */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
