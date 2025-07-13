@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axiosInstance from '../../api/axiosInstance';
+import React, { useState, useRef } from 'react';
+import emailjs from '@emailjs/browser'; // Import the new library
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { Container, Title, Text, Grid, Paper, TextInput, Textarea, Button, Group, ActionIcon, Stack, Loader } from '@mantine/core';
@@ -7,34 +7,42 @@ import { BsGithub, BsLinkedin } from "react-icons/bs";
 import './Contact.css';
 
 const Contact = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [msg, setMsg] = useState("");
+  const form = useRef();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      if (!name || !email || !msg) {
+    setLoading(true);
+
+    // These names MUST match the variables in your EmailJS template (e.g., {{name}})
+    const templateParams = {
+      name: form.current.name.value,
+      email: form.current.email.value,
+      msg: form.current.msg.value,
+    };
+
+    if (!templateParams.name || !templateParams.email || !templateParams.msg) {
         toast.error("Please provide all fields");
+        setLoading(false);
         return;
-      }
-      setLoading(true);
-      const { data } = await axiosInstance.post("/api/v1/portfolio/sendEmail", { name, email, msg });
-      setLoading(false);
-      if (data.success) {
-        toast.success(data.message);
-        setName("");
-        setEmail("");
-        setMsg("");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-      toast.error("Something went wrong");
     }
+
+    emailjs.send(
+        process.env.REACT_APP_EMAILJS_SERVICE_ID,
+        process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+        templateParams,
+        process.env.REACT_APP_EMAILJS_PUBLIC_KEY
+      )
+      .then((result) => {
+          console.log(result.text);
+          toast.success("Your message sent successfully!");
+          form.current.reset(); // Reset the form fields
+          setLoading(false);
+      }, (error) => {
+          console.log(error.text);
+          toast.error("Failed to send message. Please try again later.");
+          setLoading(false);
+      });
   };
 
   return (
@@ -72,11 +80,11 @@ const Contact = () => {
                 viewport={{ once: true }}
                 style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
               >
-                <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <Stack style={{ flexGrow: 1 }}>
-                    <TextInput withAsterisk label="Your Name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} size="md"/>
-                    <TextInput withAsterisk label="Your Email" placeholder="your.email@provider.com" value={email} onChange={(e) => setEmail(e.target.value)} size="md"/>
-                    <Textarea withAsterisk label="Your Message" placeholder="I'd like to talk about..." minRows={4} value={msg} onChange={(e) => setMsg(e.target.value)} size="md"/>
+                <form ref={form} onSubmit={handleSubmit}>
+                  <Stack>
+                      <TextInput name="name" withAsterisk label="Your Name" placeholder="John Doe" size="md"/>
+                      <TextInput name="email" withAsterisk label="Your Email" placeholder="your.email@provider.com" size="md"/>
+                      <Textarea name="msg" withAsterisk label="Your Message" placeholder="I'd like to talk about..." minRows={4} size="md"/>
                   </Stack>
                   <Button
                     type="submit"
