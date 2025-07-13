@@ -4,7 +4,10 @@ import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { Container, Title, Text, Grid, Paper, TextInput, Textarea, Button, Group, ActionIcon, Stack, Loader } from '@mantine/core';
 import { BsGithub, BsLinkedin } from "react-icons/bs";
-import './Contact.css';
+
+// We can delete Contact.css if it's empty or only has the .contact-image rule,
+// as we can handle that with inline styles or Mantine props.
+// import './Contact.css'; 
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -14,26 +17,34 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (!name || !email || !msg) {
-        toast.error("Please provide all fields");
-        return;
-      }
-      setLoading(true);
-      const { data } = await axiosInstance.post("/api/v1/portfolio/sendEmail", { name, email, msg });
+    setLoading(true);
+
+    if (!name || !email || !msg) {
+      toast.error("Please provide all fields");
       setLoading(false);
-      if (data.success) {
-        toast.success(data.message);
+      return;
+    }
+
+    try {
+      // THE FIX: We check the HTTP status code directly.
+      const response = await axiosInstance.post("/api/v1/portfolio/sendEmail", { name, email, msg });
+
+      if (response.status === 200) {
+        toast.success(response.data.message);
         setName("");
         setEmail("");
         setMsg("");
       } else {
-        toast.error(data.message);
+        // This will handle cases where the server sends a success=false message but not an error status
+        toast.error(response.data.message || "An unexpected error occurred.");
       }
     } catch (error) {
+      // This will catch network errors or if the server returns a 500/400 status
+      console.error("Contact form submission error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Something went wrong on the server.");
+    } finally {
+      // This will run no matter what, ensuring the loader always stops.
       setLoading(false);
-      console.log(error);
-      toast.error("Something went wrong");
     }
   };
 
