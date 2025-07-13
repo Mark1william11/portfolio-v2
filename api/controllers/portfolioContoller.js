@@ -42,75 +42,65 @@ const getProjectsController = async (req, res) => {
       projects,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching projects:", error);
     return res.status(500).send({
       success: false,
       message: "Error in Get Projects API",
-      error,
+      error: error.message,
     });
   }
 };
 
-// --- This is the function we are fixing ---
-const sendEmailController = async (req, res) => { // Step 1: Make the function async
-  try {
-    const { name, email, msg } = req.body;
+const sendEmailController = (req, res) => {
+  const { name, email, msg } = req.body;
 
-    if (!name || !email || !msg) {
-      return res.status(400).send({ // Use 400 for bad request, not 500
-        success: false,
-        message: "Please Provide All Fields",
-      });
-    }
-
-    // Check if the SendGrid API key is loaded
-    if (!process.env.API_SENDGRID) {
-      console.error("ERROR: SendGrid API key is not configured.");
-      return res.status(500).send({
-        success: false,
-        message: "Server configuration error. Email could not be sent."
-      });
-    }
-
-    // Re-create the transporter inside the function to ensure the API key is fresh
-    const transporter = nodemailer.createTransport(
-      sendGridTransport({
-        auth: {
-          api_key: process.env.API_SENDGRID,
-        },
-      })
-    );
-
-    // Step 2: Use "await" to wait for the email to be sent
-    await transporter.sendMail({
-      to: "mark1william11@gmail.com",
-      from: "mark1william11@gmail.com", // Note: Some email providers require the 'from' address to be a verified domain.
-      subject: `New Portfolio Contact from ${name}`,
-      html: `
-        <h5>Detail Information</h5>
-        <ul>
-          <li><p>Name : ${name}</p></li>
-          <li><p>Email : ${email}</p></li>
-          <li><p>Message : ${msg}</p></li>
-        </ul>
-      `,
-    });
-
-    // Step 3: Only send success AFTER the email is sent
-    return res.status(200).send({
-      success: true,
-      message: "Your Message Sent Successfully",
-    });
-
-  } catch (error) {
-    // This will now catch any errors from transporter.sendMail()
-    console.error("Send Email API Error:", error);
-    return res.status(500).send({
-      success: false,
-      message: "Send Email API Error",
-      error: error.message || 'An unknown error occurred',
-    });
+  // Validation
+  if (!name || !email || !msg) {
+    return res.status(400).json({ success: false, message: "Please provide all fields." });
   }
+
+  // API Key Check
+  if (!process.env.API_SENDGRID) {
+    console.error("CRITICAL: API_SENDGRID environment variable not found.");
+    return res.status(500).json({ success: false, message: "Server is not configured for sending emails." });
+  }
+
+  const transporter = nodemailer.createTransport(
+    sendGridTransport({
+      auth: {
+        api_key: process.env.API_SENDGRID,
+      },
+    })
+  );
+
+  const mailOptions = {
+    to: "mark1william11@gmail.com",
+    from: "mark1william11@gmail.com", // This MUST be your verified sender
+    subject: `New Portfolio Contact from ${name}`,
+    html: `
+      <p>You have a new contact request</p>
+      <h3>Contact Details</h3>
+      <ul>
+        <li>Name: ${name}</li>
+        <li>Email: ${email}</li>
+        <li>Message: ${msg}</li>
+      </ul>
+    `,
+  };
+
+  // Use a callback approach which is sometimes more stable in serverless environments
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("SendGrid Error:", error.toString());
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send email.",
+        error: error.toString(), // Send a clear error back
+      });
+    }
+    console.log("Message sent: %s", info.messageId);
+    return res.status(200).json({ success: true, message: "Your message sent successfully!" });
+  });
 };
 
 module.exports = { sendEmailController, getProjectsController };
