@@ -4,40 +4,41 @@ const dotenv = require("dotenv");
 const path = require("path");
 const mongoose = require('mongoose');
 
-//dotenv configuration
+// DOTENV CONFIG
 dotenv.config();
 
+// MONGODB CONNECTION
 mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log('DB Connected!'))
     .catch(err => console.log('DB Connection Error: ', err));
 
-//rest object
+// REST OBJECT
 const app = express();
 
-//middlewares
-// We are adding specific options to CORS to allow our frontend origin
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
+// MIDDLEWARES
+app.use(cors());
 app.use(express.json());
 
-//routes
+// API ROUTES
+// All your API endpoints will be handled here first.
 app.use("/api/v1/portfolio", require("./routes/portfolioRoute"));
 
-// This part is for production build on Vercel, not for local dev.
-// It's good to keep it.
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "./client/build")));
-    app.get("*", function (req, res) {
-      res.sendFile(path.join(__dirname, "./client/build/index.html"));
-    });
-}
+// STATIC FILES - Serve the React build files
+// This tells Express to look in the 'client/build' folder for static assets
+app.use(express.static(path.join(__dirname, "./client/build")));
 
-//port
+// "CATCH-ALL" ROUTE FOR THE REACT APP
+// For any request that doesn't match the API routes above,
+// serve the main index.html file of the React app.
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "./client/build/index.html"));
+});
+
+
+// PORT
 const PORT = process.env.PORT || 8080;
 
-//listen
+// LISTEN
 app.listen(PORT, () => {
-  console.log(`Server Running On PORT ${PORT} `);
+  console.log(`Server Running On PORT ${PORT}`);
 });
