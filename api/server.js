@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Corrected path for the routes file
-app.use("/api/v1/portfolio", require("../routes/portfolioRoute")); 
+app.use("/api/v1/portfolio", require("./routes/portfolioRoute"));
 
 // For the live deployment, Vercel handles serving the static files.
 // We only need this for local development, and the path must be corrected.
