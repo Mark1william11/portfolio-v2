@@ -47,17 +47,17 @@ const About = () => {
                 viewport={{ once: true }}
               >
                 <Text fz="lg" lh="xl">
-                  Hello! I am a passionate Computer Science student at Egypt-Japan
-                  University of Science and Technology, specializing in Computer
-                  Science and Information Technology. My academic journey has
-                  equipped me with a strong foundation in programming, algorithms,
-                  and software development methodologies.
+                  Hello! I am a passionate and dedicated Mobile Developer with a laser 
+                  focus on building beautiful, high-performance applications using 
+                  **Flutter**. My academic background in Computer Science at E-JUST has 
+                  provided me with a rock-solid foundation in software engineering 
+                  principles.
                 </Text>
                 <Text fz="lg" mt="md" lh="xl">
-                  I am deeply interested in **mobile development** and have hands-on
-                  experience building applications using frameworks like Flutter and
-                  React Native. I'm always driven by the challenge of creating
-                  intuitive, user-friendly interfaces that solve real-world problems.
+                  I thrive on the challenge of translating complex problems into 
+                  intuitive, elegant user experiences. From state management with 
+                  Provider or BLoC to crafting pixel-perfect UIs that feel native 
+                  on any device, my goal is to create apps that people love to use.
                 </Text>
               </motion.div>
             </Grid.Col>
