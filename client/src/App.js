@@ -39,13 +39,13 @@ function App() {
             <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
               <Title order={1} className="hero-title">Mark William</Title>
               <Text size="xl" c="yellow.5" className="hero-subtitle">
-                <Typewriter options={{ strings: ["Mobile Developer", "FullStack Developer", "Creative Problem Solver"], autoStart: true, loop: true }}/>
+                <Typewriter options={{ strings: ["Flutter Developer", "Mobile App Specialist", "UI/UX Enthusiast"], autoStart: true, loop: true }}/>
               </Text>
             </motion.div>
             <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }}>
               <Group mt="lg" justify="center">
                 <Button
-                  component={motion.a} // This tells Mantine to render as a motion-powered <a> tag
+                  component={motion.a} 
                   href="https://github.com/Mark1william11"
                   target="_blank"
                   rel="noopener noreferrer" // Important for security
