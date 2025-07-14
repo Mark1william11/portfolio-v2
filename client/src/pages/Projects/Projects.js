@@ -69,7 +69,6 @@ const Projects = () => {
                         height={160}
                         alt={project.title}
                         style={{ width: '100%', objectFit: 'cover' }}
-                        loading="lazy"
                       />
                     </Card.Section>
 
